@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    table.st-tbl1 {
+      text-align: left;
+      position: relative;
+      border-collapse: collapse; 
+    }
+    table.st-tbl1 th,
+    table.st-tbl1 td{
+      /*padding: 1rem; */
+      border: solid 1px #ddd;
+    }
+    table.st-tbl1 th {
+      background: rgb(192, 228, 248);
+      position: sticky;
+      top: 0;
+   }
+
+  </style>
+  <script src="{{ url_for('static', filename='leaflet.js') }}"></script>
+  <link rel='stylesheet' href='/static/leaflet.css' />
+  <script src="{{ url_for('static', filename='L.Map.Sync.js') }}"></script>
+  <script src="{{ url_for('static', filename='mandara2leaflet3.js') }}"></script>
+  <script src="{{ url_for('static', filename='leaflet_tiles.js') }}"></script>
+
+  <script src="{{ url_for('static', filename='lastmap_data.js') }}"></script>
+  <script>
+    function makeTableOrig(){
+        // 表の作成開始
+        tableId = "table"
+        var rowobj;
+        var spt=[];
+        dataArray=[];
+        tablehd = [];
+
+        layerNum = 0
+        cbox = window.parent.document.getElementById('layernum').innerHTML;
+        console.log("cbox:"+cbox)
+        if (cbox == '0'){
+              layerNum = 0
+        } else {
+            layerNum = 1  
+        } 
+
+        var table = document.createElement("table");
+        table.border = 1
+        table.setAttribute('class','st-tbl1')
+          //document.getElementById("yomi").textContent = layIniData[0].selectedInfoData
+          //document.getElementById("setumeibun").textContent = layIniData[0].objData[0]
+          // 表に2次元配列の要素を格納
+        thead = table.createTHead();
+        rowobj= thead.insertRow(); 
+        //cell=rowobj.createElement('th');
+        cell = document.createElement('th')
+        tablehd[0] = "オブジェクト名"
+        cell.appendChild(document.createTextNode(tablehd[0]));
+        thead.appendChild(cell);
+        if(layerNum==0){
+          spt =layIniData[layerNum].selectedInfoData
+        } else {
+          spt[0] = "100歳以上人数"
+        }
+        for(j = 0; j < spt.length; j++){
+            tablehd[j+1] = spt[j]
+            cell = document.createElement('th')
+            cell.appendChild(document.createTextNode(tablehd[j+1]));
+            thead.appendChild(cell);
+        } 
+        tbody = table.createTBody();
+        for(i = 1; i <= layIniData[layerNum].obj_Num; i++){
+          rowobj=  tbody.insertRow(-1)
+          dataArray[i-1]=[]
+//          rows.push(table.insertRow(-1));  // 行の追加
+            spt =layIniData[layerNum].objData[i-1].split('\t')
+//            console.log("spt"&spt.length)
+            cell=rowobj.insertCell(-1);
+            dataArray[i-1][0] = spt[0]
+            cell.appendChild(document.createTextNode(dataArray[i-1][0]));
+            if (layerNum == 0) {
+              var skipidx = 6
+            } else {
+              var skipidx = 2
+            }
+          
+          for(j = skipidx+1; j < spt.length; j++){
+                dataArray[i-1][skipidx]=spt[j]
+                cell=rowobj.insertCell(-1);
+                cell.appendChild(document.createTextNode(dataArray[i-1][skipidx]));
+              } 
+          } 
+          // 指定したdiv要素に表を加える
+         document.getElementById(tableId).appendChild(table);
+    }
+    function makeTable(){
+        // 表の作成開始
+        tableId = "table"
+        var rowobj;
+        var spt=[];
+        dataArray=[];
+        tablehd = [];
+
+        layerNum = 0
+        cbox = window.parent.document.getElementById('layernum').innerHTML;
+        if (cbox == '0'){
+              layerNum = 0
+        } else {
+            layerNum = 1  
+        } 
+        makedata()
+        tableinit(dataArray)
+    }
+    function makedata(){
+        tablehd=[]
+        dataArray=[]
+        tablehd[0] = "オブジェクト名"
+        spt=[]
+        if(layerNum==0){
+          spt =layIniData[layerNum].selectedInfoData
+        } else {
+          spt[0] = "100歳以上人数"
+        }
+        for(j = 0; j < spt.length; j++){
+            tablehd[j+1] = spt[j]
+        }
+        for(i = 0; i < layIniData[layerNum].obj_Num; i++){
+            dataArray[i]=[]
+            spt =layIniData[layerNum].objData[i].split('\t')
+//            console.log("spt"&spt.length)
+            dataArray[i][0] = spt[0]
+            if (layerNum == 0) {
+              var skipidx = 6
+            } else {
+              var skipidx = 2
+            }
+            for(j = skipidx+1; j < spt.length; j++){
+                dataArray[i][j-skipidx]=spt[j]
+            } 
+        }
+    }
+    function tableinit(dspdata){
+        var table = document.createElement("table");
+        table.border = 1
+        table.setAttribute('class','st-tbl1')
+        thead = table.createTHead();
+        rowobj= thead.insertRow(); 
+        for(j = 0; j < tablehd.length; j++){
+            cell = document.createElement('th')
+            cell.appendChild(document.createTextNode(tablehd[j]));
+            thead.appendChild(cell);
+        } 
+        tbody = table.createTBody();
+        for(i = 0; i < dspdata.length; i++){
+          rowobj=  tbody.insertRow(-1)
+          for(j = 0; j < dspdata[i].length; j++){
+                cell=rowobj.insertCell(-1);
+                cell.appendChild(document.createTextNode(dspdata[i][j]));
+              } 
+          } 
+          // 指定したdiv要素に表を加える
+         document.getElementById(tableId).appendChild(table);
+    }
+    function selectTable(objNum,seltext,detailCond){
+      var tableid = document.getElementById("table")
+      var tableelm = tableid.getElementsByTagName("table")
+      var dspdata=[]
+      if(tableelm != null){
+        tableid.removeChild(tableelm[0]);
+      }
+      index = 0
+      dcount = 50
+      var outrow = 0
+      if (objNum < 0){
+        dspdata = Array.from(dataArray)
+      } else {
+        if(objNum < dataArray[0].length){
+          index = objNum
+        }else {
+          index = 0
+        }
+        console.log("objNum:"+objNum+"seltext"+seltext+"index:"+index)
+        if (isNaN(seltext)){
+          for(i = 0;i < dataArray.length ;i++){
+            if ( dataArray[i][index].indexOf(seltext) != -1) {
+              dspdata[outrow] = Array.from(dataArray[i]);
+              outrow = outrow + 1
+            }
+          }
+        } else {
+          //条件が数字の時は、以上、以下で絞り込む
+            for(i = 0;i < dataArray.length ;i++){
+              if(detailCond==1){
+                //以上
+                if ( Number(dataArray[i][index]) >= Number(seltext)) {
+                    dspdata[outrow] = Array.from(dataArray[i]);
+                  outrow = outrow + 1
+                }
+              } else {
+                if ( Number(dataArray[i][index]) <= Number(seltext)) {
+                    dspdata[outrow] = Array.from(dataArray[i]);
+                  outrow = outrow + 1
+                }
+              }
+            }
+        }
+
+        
+      }
+//      console.log(dspdata)
+      tableinit(dspdata)
+    }
+    function sortTable(dindex,proc){
+      var tableid = document.getElementById("table")
+      var tableelm = tableid.getElementsByTagName("table")
+      if(tableelm != null){
+        tableid.removeChild(tableelm[0]);
+      }
+      
+      if (dindex >= dataArray[0].length || dindex < 0){
+        dindex = 0
+      }
+      if(proc == 1){
+        // 昇順
+          dataArray.sort(function(a, b) {
+	        return a[dindex] - b[dindex];
+        })
+      } else{
+        // 降順
+        dataArray.sort(function(a, b) {
+	      return b[dindex] - a[dindex];
+        });
+      }
+      tableinit(dataArray)
+    }
+
+
+    </script>
+    
+  <title>TEST</title>
+</head>
+<body  onload="makeTable()">
+    <div id="table"></div>   
+</body>
+</html>

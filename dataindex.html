@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  </style>
+  <script src="{{ url_for('static', filename='leaflet.js') }}"></script>
+  <link rel='stylesheet' href='/static/leaflet.css' />
+  <script src="{{ url_for('static', filename='L.Map.Sync.js') }}"></script>
+  <script src="{{ url_for('static', filename='mandara2leaflet3.js') }}"></script>
+  <script src="{{ url_for('static', filename='leaflet_tiles.js') }}"></script>
+
+  <script src="{{ url_for('static', filename='lastmap_data.js') }}"></script>
+  <script>
+    
+    function setlayernum(){
+    /*    iframeID.style.width = iframeID.contentWindow.document.body.scrollWidth + "px"; 
+      
+         */
+      /*  ifremeID.height = iframeID.contentWindow.document.body.scrollHeight + "px"; */
+      layerNum = 0
+  
+      if(!window.opener || window.opener.closed){ // メインウィンドウの存在をチェック
+          layerNum = 0
+	    } else {
+          cbox = window.opener.document.getElementById('datalayer').innerHTML;
+          if (cbox == "1"){
+            layerNum = 1
+            } 
+      }
+      layertxt = document.getElementById('layernum');
+      layertxt.innerHTML = String(layerNum)
+
+      objectselectBox()
+
+      iframeID = document.getElementById('dataframe');
+    /*frameheight = document.documentElement.clientHeight - 60 
+/*      iframeID.style.height= frameheight + "px";  */
+      iframeID.style.height=document.documentElement.clientHeight - 60
+      console.log("documentelement.clientheight:"+document.documentElement.clientHeight)
+      iframeID.contentWindow.location.reload();
+
+    }
+    function objectselectBox(){
+       tablehd=[]
+       tablehd[0] = "オブジェクト名"
+       spt=[]
+       if(layerNum==0){
+          spt =layIniData[layerNum].selectedInfoData
+       } else {
+          spt[0] = "100歳以上人数"
+       }
+       for(j = 0; j < spt.length ; j++){
+            tablehd[j+1] = spt[j]
+       }
+       // option 追加
+      selObjelm = document.getElementById("selObj");
+      for (i = 0; i < tablehd.length; i++) {
+        let option = document.createElement("option");
+        option.setAttribute("value", i); //option.value = v.value;
+        option.innerHTML = tablehd[i]
+        selObjelm.appendChild(option);
+        if (i == 0) {   
+          option.setAttribute("selected", true);    // selectedの属性を付与
+        }
+      }
+    }
+    function dsort(){
+
+      let selObjelem = document.getElementById('selObj');
+      var selObjNum = selObjelem.value;
+      let elements = document.getElementsByName('sort');
+      let len = elements.length;
+      let sortValue = 1;
+      for (let i = 0; i < len; i++){
+        if (elements.item(i).checked){
+            sortValue = elements.item(i).value;
+        }
+      }
+      subdoc =     document.getElementById('dataframe').contentWindow
+      subdoc.sortTable(selObjNum,sortValue)
+    }
+    function top50(){
+      let selObjelem = document.getElementById('selObj');
+      var selObjNum = selObjelem.value;
+      subdoc =     document.getElementById('dataframe').contentWindow
+      subdoc.selectTable(0,"兵庫県")
+    }
+    function selTable(){
+      let selObjelem = document.getElementById('selObj');
+      var selObjNum = selObjelem.value;
+      selectText = document.getElementById('selText').value
+      subdoc =     document.getElementById('dataframe').contentWindow
+      console.log("seltext"+selectText)
+      let elements = document.getElementsByName('sel_Cond');
+      let len = elements.length;
+      let detailCond = 1;
+      for (let i = 0; i < len; i++){
+        if (elements.item(i).checked){
+          detailCond = elements.item(i).value;
+        }
+      }
+      subdoc.selectTable(selObjNum ,selectText,detailCond)
+    }
+    function dspall(){
+      subdoc =     document.getElementById('dataframe').contentWindow
+      subdoc.selectTable(-1)
+    }
+
+    </script>
+    
+  <title>TEST</title>
+</head>
+<body >
+  <div id="layernum" hidden="hidden">示</div>
+    <div>
+      <table style="clear: both;margin:auto;">
+        <tr>
+          <TD><button type="submit"  style="background: rgb(24, 128, 3);font-size:18ps;" id="dsort" onclick="dsort()">ソート</button></TD>
+          <TD>
+            <label><input type="radio" name="sort" value=1 checked>昇順</label><BR>
+            <label><input type="radio" name="sort" value=2 >降順</label>
+          </TD>
+          <TD>　項目名 <select name="selObj" id="selObj"></select></TD>
+          <td>　条件 <input  class="inputtext" type="input" id="selText" name="selecttext" value="" maxlength="9" required;></td>
+          <TD>
+          <label><input type="radio" name="sel_Cond" value=1 checked>以上</label><BR>
+          <label><input type="radio" name="sel_Cond" value=2 >以下</label>
+          </TD>
+          <TD>
+            <button type="submit"  style="background:rgb(247, 131, 131);font-size:18ps;" id="dsort" onclick="selTable()">絞込み</button>
+          </TD>
+          <!--<TD><button type="submit"  style="background: rgb(24, 128, 3);font-size:18ps;" id="top50" onclick="top50()">TOP50</button></TD>-->
+          <TD><button type="submit"  style="background: rgb(22, 71, 206);font-size:18ps;" id="dsort" onclick="dspall()">全件表示</button></TD>
+      </tr>
+      </table>
+    </div>
+    <!--<iframe id="iframeID" onload="iframeFUNCTION()" src="./dataframe"
+    frameborder="0" allowfullscreen="allowfullscreen" width=100% ></iframe> -->
+    <!--<iframe id="iframeID" src="./dataframe" frameborder="0" allowfullscreen="allowfullscreen" width=100% height="700px"></iframe>-->
+    <iframe  id="dataframe" src="./dataframe" frameborder="0" allowfullscreen="allowfullscreen" style="width:100% ;height:700px"></iframe>
+    <script type="text/javascript">
+      setlayernum();
+   </script>
+</body>
+</html>
