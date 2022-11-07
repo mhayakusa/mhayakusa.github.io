@@ -1,74 +1,11 @@
 ﻿<!DOCTYPE html>
 <html>
   <head>
-    <title>市町村人口色別地図</title>
+    <title>mhayakusa github</title>
     <meta http-equiv='content-type' content='text/html; charset=UTF-8'/>
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <!--<style>
-        @media screen and (min-width: 767px) { /*ウィンドウ幅が767px以上の場合に適用*/
-            
-            main {
-                background-color: #f1bed2; /*青色*/
-                text-align: center;
-            }
-        }           
-        @media screen and (max-width: 479px) { /*ウィンドウ幅が最大479pxまでの場合に適用*/
-            main{
-                background-color: #00FF00; /*緑色*/
-            }
-        }
-    </style>-->
-        <script>
-      function dataindex(openurl){
- 
-        iframedoc = document.getElementById('mapframe').contentWindow.document;
-        layerNum = 0
-	      for(i = 0;i <2 ;i++){
-/*            cbox = iframeID.contentWindow.document.querySelector('#layer_visible0:' + String(i)); */
-            cbox = iframedoc.getElementById('layer_visible0:' + String(i));
-            if (cbox.checked == true){
-              console.log("check find"+ cbox)
-              layerNum = i
-            } 
-        }
-        layertxt = document.getElementById('datalayer');
-        layertxt.innerHTML = String(layerNum)
-
-          win1 = window.open(openurl, "data window", "width=1000,height=900,scrollbars=yes")
-       }
-
-      function mapReduce(){
-        mp = 0
-        layerNum = 0
-        var dobj = document.getElementById("dataitem" + String(mp) + ":" + String(layerNum));
-        dobj.options[3].selected = true
-        objNum_backup = layer[mp][layerNum].obj_Num 
-        layer[mp][layerNum].obj_Num=200
-        changeDataItem(mp,layerNum , false)
-        layer[mp][layerNum].obj_Num=objNum_backup
-      }
-</script>
-
   </head>
   <body >
     <p style="text-align:center">ボタンをクリックすると、表示している地図のデータ表や、鉄道駅のない市町村だけの地図を表示できます。</p>
-    <table style="clear: both;margin:auto;">
-      <tr><TD>
-        <button type="submit"  style="background: rgb(26, 143, 3);border: 2px solid black;" id="databtn" onclick="dataindex('/dataindex')">データの表示</button>
-      </TD>
-        <TD>
-          <TD><button type="button" style="background:rgb(247, 131, 131); border: 2px solid black;" onclick="window.location = '/map'">鉄道駅の無い市町村</button></TD>
-        <TD>
-       <!--
-          <TD>
-            <button type="submit" id="butn2" onclick="mapReduce()">データ200テスト</button></TD>
-          <TD>
-            <button type="submit" id="butn2" onclick="dataindex('/datawin')">データ表示2</button></TD>
-          </TD>
-        -->
-      </tr>
-    </table>
-    <iframe  id="mapframe" src="./indexframe" frameborder="0" allowfullscreen="allowfullscreen" style="width:100% ;height:900px"></iframe>
-    <div id="datalayer" hidden="hidden"></div>
-  </body>
+   </body>
 </html>
